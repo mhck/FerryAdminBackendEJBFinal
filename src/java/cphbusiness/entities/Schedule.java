@@ -4,12 +4,13 @@
  * and open the template in the editor.
  */
 
-package dk.cphbusiness.entities;
+package cphbusiness.entities;
 
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -53,7 +54,7 @@ public class Schedule implements Serializable {
     @JoinTable(name = "SCHEDULE_HAS_DEPARTURE", joinColumns = {
         @JoinColumn(name = "SCHEDULE_ID", referencedColumnName = "ID")}, inverseJoinColumns = {
         @JoinColumn(name = "DEPARTURE_ID", referencedColumnName = "ID")})
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.PERSIST)
     private Collection<Departure> departureCollection;
 
     public Schedule() {

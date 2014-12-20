@@ -4,13 +4,14 @@
  * and open the template in the editor.
  */
 
-package dk.cphbusiness.entities;
+package cphbusiness.entities;
 
 import java.io.Serializable;
 import java.util.Collection;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -48,9 +49,9 @@ public class Route implements Serializable {
     @JoinColumn(name = "ID_DESTINATION", referencedColumnName = "ID")
     @ManyToOne
     private Harbour idDestination;
-    @OneToMany(mappedBy = "routeId")
+    @OneToMany(mappedBy = "route")
     private Collection<Departure> departureCollection;
-    @OneToMany(mappedBy = "routeId")
+    @OneToMany(mappedBy = "routeId", fetch = FetchType.EAGER)
     private Collection<Price> priceCollection;
 
     public Route(Integer id, Integer duration, Harbour idOrigin, Harbour idDestination, Collection<Departure> departureCollection, Collection<Price> priceCollection) {

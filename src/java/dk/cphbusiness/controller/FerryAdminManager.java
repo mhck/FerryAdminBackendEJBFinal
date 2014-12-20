@@ -1,11 +1,12 @@
 package dk.cphbusiness.controller;
 
 import dk.cphbusiness.assembler.Assembler;
-import dk.cphbusiness.entities.Ferry;
-import dk.cphbusiness.entities.FerryConfig;
-import dk.cphbusiness.entities.Route;
-import dk.cphbusiness.entities.Schedule;
+import cphbusiness.entities.Ferry;
+import cphbusiness.entities.FerryConfig;
+import cphbusiness.entities.Route;
+import cphbusiness.entities.Schedule;
 import ferry.contract.AdminContract;
+import ferry.dto.DepartureDetail;
 import ferry.dto.FerryConfigDetail;
 import ferry.dto.FerryDetail;
 import ferry.dto.FerryIdentifier;
@@ -21,15 +22,10 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import javax.ejb.Stateless;
-import javax.naming.InitialContext;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
-/**
- *
- * @author martin
- */
 @Stateless
 public class FerryAdminManager implements AdminContract {
 
@@ -73,12 +69,24 @@ public class FerryAdminManager implements AdminContract {
     }
 
     @Override
-    public void addSchedule(ScheduleDetail sd) throws DataAccessException {
-        em.getTransaction().begin();
-        Schedule schedule = assembler.getScheduleFromScheduleDetail(sd);
-        em.persist(schedule);
-        em.getTransaction().commit();
-        em.close();
+    public void addSchedule(ScheduleDetail sd) throws DataAccessException, InvalidDateException {
+        if (sd.getStartDate().before(new Date()) && sd.getEndDate().after(new Date()) && sd.getStartDate().before(sd.getEndDate())) {
+            throw new InvalidDateException("Schdule date is before todays date");
+        }
+        for (DepartureDetail depature : sd.getDepartureDetail()) {
+            if (depature.getDepartureDate().before(sd.getStartDate()) && depature.getDepartureDate().after(sd.getEndDate())) {
+                throw new InvalidDateException("One of the depatures got a Date outside the Schdule range");
+            }
+        }
+        try {
+            em.getTransaction().begin();
+            Schedule schedule = assembler.getScheduleFromScheduleDetail(sd);
+            em.persist(schedule);
+            em.getTransaction().commit();
+            em.close();
+        } catch (Exception ex) {
+            throw new DataAccessException("Error saving the data");
+        }
     }
 
     @Override
@@ -93,7 +101,9 @@ public class FerryAdminManager implements AdminContract {
 
     @Override
     public Collection<RouteDetail> showRoutes() throws NoSuchHarbourException {
-        return assembler.getRouteDetailFromRoutes((List<Route>) em.createNamedQuery("Route.findAll").getResultList());
+        //Thread.currentThread().setContextClassLoader(Route.class.getClassLoader());
+        List<Route> routes = em.createNamedQuery("Route.findAll").getResultList();
+        return assembler.getRouteDetailFromRoutes(routes);
     }
 
     @Override

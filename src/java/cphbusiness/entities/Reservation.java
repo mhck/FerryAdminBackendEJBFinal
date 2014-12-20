@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-package dk.cphbusiness.entities;
+package cphbusiness.entities;
 
 import java.io.Serializable;
 import java.util.Collection;

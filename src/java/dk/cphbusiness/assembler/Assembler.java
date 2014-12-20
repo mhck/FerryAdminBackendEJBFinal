@@ -1,11 +1,11 @@
 package dk.cphbusiness.assembler;
-import dk.cphbusiness.entities.Departure;
-import dk.cphbusiness.entities.Ferry;
-import dk.cphbusiness.entities.FerryConfig;
-import dk.cphbusiness.entities.Harbour;
-import dk.cphbusiness.entities.Price;
-import dk.cphbusiness.entities.Schedule;
-import dk.cphbusiness.entities.Route;
+import cphbusiness.entities.Departure;
+import cphbusiness.entities.Ferry;
+import cphbusiness.entities.FerryConfig;
+import cphbusiness.entities.Harbour;
+import cphbusiness.entities.Price;
+import cphbusiness.entities.Schedule;
+import cphbusiness.entities.Route;
 import ferry.dto.DepartureDetail;
 import ferry.dto.FerryConfigDetail;
 import ferry.dto.HarbourSummary;
@@ -13,6 +13,7 @@ import ferry.dto.RouteDetail;
 import ferry.dto.ScheduleDetail;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 /**
  *
@@ -22,7 +23,7 @@ public class Assembler {
     public Collection<RouteDetail> getRouteDetailFromRoutes(Collection<Route> routes) {
         Collection<RouteDetail> resultList = new ArrayList<>();
         for (Route route : routes) {    
-            ArrayList<Price> priceList = (ArrayList<Price>) route.getPriceCollection();
+            List<Price> priceList = (List<Price>) route.getPriceCollection();
             int priceAmount = priceList.get(0).getAmount().intValue(); // TODO
             HarbourSummary originHarbour = new HarbourSummary(route.getIdOrigin().getName(), route.getIdOrigin().getId());
             HarbourSummary destinationHarbour = new HarbourSummary(route.getIdOrigin().getName(), route.getIdOrigin().getId());
@@ -43,7 +44,7 @@ public class Assembler {
     public Collection<FerryConfigDetail> getFerryConfigDetailFromFerryConfig(Collection<FerryConfig> ferryConfigs) {
         Collection<FerryConfigDetail> resultList = new ArrayList<>();
         for (FerryConfig ferryConfig : ferryConfigs) {
-            ArrayList<Departure> departures = (ArrayList<Departure>) ferryConfig.getDepartureCollection();
+            //List<Departure> departures = (ArrayList<Departure>) ferryConfig.getDepartureCollection();
             resultList.add(new FerryConfigDetail(ferryConfig.getPeopleCapacity(), ferryConfig.getVehicleCapacity(), ferryConfig.getWeightCapacity(), ferryConfig.getId()));
         }
         return resultList;
@@ -55,7 +56,7 @@ public class Assembler {
     
     public DepartureDetail getDepartureDetailFromDeparture(Departure departure) {
         Collection<Route> routes = new ArrayList<>();
-        //routes.add(departure.getRouteId());
+        routes.add(departure.getRoute());
         ArrayList<RouteDetail> routeDetail = (ArrayList<RouteDetail>) getRouteDetailFromRoutes(routes);
         ArrayList<FerryConfigDetail> ferryConfig = (ArrayList<FerryConfigDetail>) getFerryConfigDetailFromFerryConfig(departure.getFerryConfigCollection());
         DepartureDetail departureDetail = new DepartureDetail(Integer.parseInt(departure.getDepartureTime()), departure.getDepartureDate(), departure.getId(), routeDetail.get(0), ferryConfig.get(0));

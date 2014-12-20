@@ -4,13 +4,14 @@
  * and open the template in the editor.
  */
 
-package dk.cphbusiness.entities;
+package cphbusiness.entities;
 
 import java.io.Serializable;
 import java.util.Collection;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
@@ -54,7 +55,7 @@ public class FerryConfig implements Serializable {
     @NotNull
     @Column(name = "WEIGHT_CAPACITY")
     private int weightCapacity;
-    @ManyToMany(mappedBy = "ferryConfigCollection")
+    @ManyToMany(mappedBy = "ferryConfigCollection", fetch = FetchType.EAGER)
     private Collection<Departure> departureCollection;
     @JoinColumn(name = "FERRY_ID", referencedColumnName = "ID")
     @ManyToOne
